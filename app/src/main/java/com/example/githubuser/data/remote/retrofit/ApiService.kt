@@ -7,7 +7,10 @@ import retrofit2.http.*
 
 interface ApiService {
     @GET("users")
-    fun getUsers(): Call<List<UserListResponseItem>>
+    fun getUsers(
+        @Query("since") since: Int,
+        @Query("per_page") perPage: Int
+    ): Call<List<UserListResponseItem>>
 
     @GET("users/{username}/followers")
     fun getFollowers(@Path("username") username: String): UserListResponse

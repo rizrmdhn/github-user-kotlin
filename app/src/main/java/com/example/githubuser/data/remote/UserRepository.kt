@@ -1,14 +1,10 @@
 package com.example.githubuser.data.remote
 
-import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.githubuser.data.remote.Result
-import com.example.githubuser.data.remote.response.UserListResponse
 import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.data.remote.retrofit.ApiService
 import com.example.githubuser.ui.screen.common.UiState
@@ -23,9 +19,14 @@ class UserRepository(
 ) {
     private val data = mutableStateListOf<UserListResponseItem>()
     private var error by mutableStateOf("")
+    private var since by mutableIntStateOf(0)
+    private val perPage by mutableIntStateOf(10)
 
     fun getUsers(): Flow<UiState<List<UserListResponseItem>>> {
-        val client = apiService.getUsers()
+        val client = apiService.getUsers(
+            since = since,
+            perPage = perPage
+        )
         client.enqueue(object : Callback<List<UserListResponseItem>> {
             override fun onResponse(
                 call: Call<List<UserListResponseItem>>,
@@ -34,8 +35,11 @@ class UserRepository(
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        // the data still not updated
-                        data.addAll(responseBody)
+                        // check if the id is already in the list
+                        val filteredList = responseBody.filter { user ->
+                            data.none { it.id == user.id }
+                        }
+                        data.addAll(filteredList)
                     }
                 } else {
                     error = response.message()
@@ -56,6 +60,11 @@ class UserRepository(
         }
 
         return flowOf(UiState.Success(data))
+    }
+
+    fun getMoreUsers(): Flow<UiState<List<UserListResponseItem>>> {
+        since += perPage
+        return getUsers()
     }
 
 //    fun getFollowers(username: String): LiveData<Result<UserListResponse>> = liveData {

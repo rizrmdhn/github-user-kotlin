@@ -1,24 +1,23 @@
 package com.example.githubuser.ui.screen.home
 
-import android.util.Log
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.githubuser.di.Injection
 import com.example.githubuser.ui.ViewModelFactory
-import com.example.githubuser.data.remote.Result
-import com.example.githubuser.data.remote.response.UserListResponse
 import com.example.githubuser.data.remote.response.UserListResponseItem
-import com.example.githubuser.ui.components.LoadingIndicator
 import com.example.githubuser.ui.components.UserCard
+import com.example.githubuser.ui.components.UserCardLoading
 import com.example.githubuser.ui.screen.common.UiState
 
 @Composable
@@ -32,13 +31,19 @@ fun HomeScreen(
         when (uiState) {
             is UiState.Loading -> {
                 viewModel.getUsers()
-                LoadingIndicator()
+                LazyColumn {
+                    items(10) {
+                        UserCardLoading()
+                    }
+                }
             }
 
             is UiState.Success -> {
                 HomeContent(
                     users = uiState.data,
-                    modifier = modifier,
+                    loadMore = {
+                        viewModel.getMoreUsers()
+                    }
                 )
             }
 
@@ -57,9 +62,20 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     users: List<UserListResponseItem>,
-    modifier: Modifier = Modifier,
+    loadMore: () -> Unit = {},
+    moreItems: Boolean = true,
 ) {
-    LazyColumn() {
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(
+            start = 20.dp,
+            end = 20.dp,
+            top = 16.dp,
+            bottom = 16.dp
+        )
+    ) {
         if (users.isEmpty()) {
             item {
                 Text(
@@ -80,6 +96,28 @@ fun HomeContent(
                     onClick = { /*TODO*/ }
                 )
             }
+            items(users.size) {index ->
+                if (index == users.size - 1) {
+                    if (moreItems) {
+                        loadMore()
+                        UserCardLoading()
+                    } else {
+                        Text(
+                            text = "No more items",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillParentMaxSize()
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen()
 }
