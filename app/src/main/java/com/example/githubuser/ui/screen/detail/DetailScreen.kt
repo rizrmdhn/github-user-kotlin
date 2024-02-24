@@ -185,7 +185,7 @@ fun DetailScreenContent(
                     0 -> {
                         FollowerScreen(
                             username = userDetail.login,
-                            navigateToDetail =  {
+                            navigateToDetail = {
                                 navigateToDetail(it)
                             }
                         )
@@ -212,8 +212,8 @@ fun DetailScreenPreview() {
         username = "username",
         navigateBack = {
 
-            },
+        },
         navigateToDetail = {
-            }
+        }
     )
 }

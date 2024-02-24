@@ -21,15 +21,15 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DetailUserTabLayout(
-    modifier: Modifier = Modifier,
     tabIndex: Int,
     tabs: List<String>,
     onTabSelected: (Int) -> Unit = {},
     mapFunction: @Composable () -> Unit = {}
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxSize()
 
     ) {
         TabRow(
