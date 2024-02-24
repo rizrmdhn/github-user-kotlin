@@ -1,3 +1,8 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
+val githubToken: String = gradleLocalProperties(rootDir).getProperty("GITHUB_TOKEN") ?: ""
+val debug: Boolean = gradleLocalProperties(rootDir).getProperty("DEBUG")?.toBoolean() ?: false
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -15,8 +20,8 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
-        buildConfigField("Boolean", "DEBUG", "true")
-        buildConfigField("String", "GITHUB_TOKEN", "\"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\"")
+        buildConfigField("Boolean", "DEBUG", "$debug")
+        buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

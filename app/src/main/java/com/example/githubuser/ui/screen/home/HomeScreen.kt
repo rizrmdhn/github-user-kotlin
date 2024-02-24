@@ -1,6 +1,8 @@
 package com.example.githubuser.ui.screen.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -40,7 +42,8 @@ fun HomeScreen(
                         start = 20.dp,
                         end = 20.dp,
                         bottom = 16.dp
-                    )
+                    ),
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     item {
                         Search(
