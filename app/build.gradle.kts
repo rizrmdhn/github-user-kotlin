@@ -16,6 +16,7 @@ android {
 
         buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
         buildConfigField("Boolean", "DEBUG", "true")
+        buildConfigField("String", "GITHUB_TOKEN", "\"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\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -77,6 +78,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //lifeCycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
