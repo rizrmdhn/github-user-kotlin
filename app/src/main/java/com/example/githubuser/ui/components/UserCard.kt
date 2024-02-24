@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -29,8 +28,6 @@ import coil.compose.SubcomposeAsyncImageContent
 @Composable
 fun UserCard(
     name: String,
-    followers: Int,
-    following: Int,
     imageUrl: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -82,21 +79,6 @@ fun UserCard(
                 Spacer(
                     modifier = Modifier.size(8.dp)
                 )
-                Row {
-                    Text(
-                        text = "Followers: $followers",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light
-                    )
-                    Spacer(
-                        modifier = Modifier.size(8.dp)
-                    )
-                    Text(
-                        text = "Following: $following",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light
-                    )
-                }
             }
         }
     }
@@ -109,8 +91,6 @@ fun UserCardPreview() {
     UserCard(
         name = "John Doe",
         imageUrl = "https://avatars.githubusercontent.com/u/1?v=4",
-        followers = 0,
-        following = 0,
         onClick = {
             // do nothing
         }

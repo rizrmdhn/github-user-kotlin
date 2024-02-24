@@ -63,33 +63,6 @@ fun UserCardLoading(
                 Spacer(
                     modifier = Modifier.size(8.dp)
                 )
-                Row {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                shimmerBrush(
-                                    targetValue = 1300f,
-                                    showShimmer = true
-                                )
-                            )
-                            .width(100.dp)
-                            .height(16.dp)
-                    )
-                    Spacer(
-                        modifier = Modifier.size(8.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                shimmerBrush(
-                                    targetValue = 1300f,
-                                    showShimmer = true
-                                )
-                            )
-                            .width(100.dp)
-                            .height(16.dp)
-                    )
-                }
             }
         }
     }

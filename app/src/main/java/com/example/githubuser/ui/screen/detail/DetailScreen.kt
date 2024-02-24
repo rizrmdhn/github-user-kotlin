@@ -142,8 +142,16 @@ fun DetailScreenContent(
             modifier = Modifier.size(8.dp)
         )
         Text(
-            text = userDetail.login,
-            style = MaterialTheme.typography.headlineLarge
+            text = userDetail.name,
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(
+            modifier = Modifier
+                .size(8.dp)
+        )
+        Text(
+            text = "@${userDetail.login}",
+            style = MaterialTheme.typography.bodyLarge
         )
         Spacer(
             modifier = Modifier

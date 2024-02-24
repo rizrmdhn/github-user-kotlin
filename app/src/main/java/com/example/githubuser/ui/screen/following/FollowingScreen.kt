@@ -94,8 +94,6 @@ fun FollowingScreenContent(
             items(followerList, key = { it.id }) { user ->
                 UserCard(
                     name = user.login,
-                    followers = 0,
-                    following = 0,
                     imageUrl = user.avatarUrl,
                     onClick = {
                         navigateToDetail(user.login)
