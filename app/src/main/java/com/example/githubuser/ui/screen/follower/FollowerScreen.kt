@@ -29,8 +29,11 @@ fun FollowerScreen(
     username: String, viewModel: FollowerScreenViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
-                context = LocalContext.current
-            )
+                LocalContext.current
+            ),
+            Injection.provideSettingPreferences(
+                LocalContext.current
+            ),
         )
     ), navigateToDetail: (String) -> Unit
 ) {

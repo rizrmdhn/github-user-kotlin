@@ -2,6 +2,7 @@ package com.example.githubuser.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.githubuser.data.local.dataStore.SettingPreferences
 import com.example.githubuser.data.remote.UserRepository
 import com.example.githubuser.ui.screen.detail.DetailScreenViewModel
 import com.example.githubuser.ui.screen.favorite.FavoriteScreenViewModel
@@ -11,10 +12,15 @@ import com.example.githubuser.ui.screen.home.HomeViewModel
 
 class ViewModelFactory(
     private val repository: UserRepository,
+    private val preferences: SettingPreferences
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GithubUserAppViewModel::class.java)) {
+            return GithubUserAppViewModel(preferences) as T
+        }
+
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             return HomeViewModel(repository) as T
         }

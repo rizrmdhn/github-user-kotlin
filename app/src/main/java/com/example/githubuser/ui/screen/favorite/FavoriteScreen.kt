@@ -28,13 +28,18 @@ fun FavoriteScreen(
     viewModel: FavoriteScreenViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
-                context = LocalContext.current
-            )
+                LocalContext.current
+            ),
+            Injection.provideSettingPreferences(
+                LocalContext.current
+            ),
         )
 
     ),
     navigateToDetail: (String) -> Unit,
-    navigateToFavorite: () -> Unit
+    navigateToFavorite: () -> Unit,
+    isDarkMode: Boolean,
+    darkThemeSwitch: () -> Unit
 ) {
     val query by viewModel.query.collectAsState(initial = "")
 
@@ -56,6 +61,8 @@ fun FavoriteScreen(
                             active = false,
                             onActiveChange = {},
                             navigateToFavorite = {},
+                            isDarkMode = isDarkMode,
+                            darkModeSwitch = darkThemeSwitch,
                         )
                     }
                 }
@@ -68,6 +75,8 @@ fun FavoriteScreen(
                     onQueryChange = viewModel::searchFavoriteUsers,
                     navigateToDetail = navigateToDetail,
                     navigateToFavorite = navigateToFavorite,
+                    isDarkMode = isDarkMode,
+                    darkThemeSwitch = darkThemeSwitch
                 )
             }
 
@@ -84,6 +93,8 @@ fun FavoriteContent(
     onQueryChange: (String) -> Unit,
     navigateToDetail: (String) -> Unit,
     navigateToFavorite: () -> Unit,
+    isDarkMode: Boolean,
+    darkThemeSwitch: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -103,6 +114,8 @@ fun FavoriteContent(
                 active = false,
                 onActiveChange = {},
                 navigateToFavorite = navigateToFavorite,
+                isDarkMode = isDarkMode,
+                darkModeSwitch = darkThemeSwitch,
             )
         }
         if (users.isEmpty()) {
@@ -139,6 +152,8 @@ fun FavoriteScreenPreview() {
         query = "",
         onQueryChange = {},
         navigateToDetail = {},
-        navigateToFavorite = {}
+        navigateToFavorite = {},
+        isDarkMode = true,
+        darkThemeSwitch = {}
     )
 }

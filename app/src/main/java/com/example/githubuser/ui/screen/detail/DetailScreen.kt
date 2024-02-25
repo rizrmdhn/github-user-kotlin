@@ -54,8 +54,11 @@ fun DetailScreen(
     viewModel: DetailScreenViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
-                context = LocalContext.current
-            )
+                LocalContext.current
+            ),
+            Injection.provideSettingPreferences(
+                LocalContext.current
+            ),
         )
     ),
     navigateBack: () -> Unit,
@@ -126,6 +129,7 @@ fun DetailScreenContent(
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    tint = if (isFavorite) Color.Red else Color.Black,
                     contentDescription = "Favorite"
                 )
             }

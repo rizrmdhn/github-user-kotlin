@@ -28,8 +28,11 @@ fun FollowingScreen(
     viewModel: FollowingScreenViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
-                context = LocalContext.current
-            )
+                LocalContext.current
+            ),
+            Injection.provideSettingPreferences(
+                LocalContext.current
+            ),
         )
     ),
     navigateToDetail: (String) -> Unit

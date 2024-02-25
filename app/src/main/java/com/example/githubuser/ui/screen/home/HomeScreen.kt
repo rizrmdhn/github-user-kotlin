@@ -16,9 +16,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.di.Injection
 import com.example.githubuser.ui.ViewModelFactory
-import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.ui.common.UiState
 import com.example.githubuser.ui.components.Search
 import com.example.githubuser.ui.components.UserCard
@@ -29,12 +29,17 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
-                context = LocalContext.current
-            )
+                LocalContext.current
+            ),
+            Injection.provideSettingPreferences(
+                LocalContext.current
+            ),
         )
     ),
     navigateToDetail: (String) -> Unit,
-    navigateToFavorite: () -> Unit
+    navigateToFavorite: () -> Unit,
+    isDarkMode: Boolean,
+    darkThemeSwitch: () -> Unit
 ) {
     val query by viewModel.query.collectAsState(initial = "")
 
@@ -44,11 +49,8 @@ fun HomeScreen(
                 viewModel.getUsers()
                 LazyColumn(
                     contentPadding = PaddingValues(
-                        start = 20.dp,
-                        end = 20.dp,
-                        bottom = 16.dp
-                    ),
-                    modifier = Modifier.fillMaxSize()
+                        start = 20.dp, end = 20.dp, bottom = 16.dp
+                    ), modifier = Modifier.fillMaxSize()
                 ) {
                     item {
                         Search(
@@ -59,6 +61,8 @@ fun HomeScreen(
                             active = false,
                             onActiveChange = {},
                             navigateToFavorite = navigateToFavorite,
+                            isDarkMode = isDarkMode,
+                            darkModeSwitch = darkThemeSwitch,
                         )
                     }
                     items(10) {
@@ -76,7 +80,9 @@ fun HomeScreen(
                         viewModel.getMoreUsers()
                     },
                     navigateToDetail = navigateToDetail,
-                    navigateToFavorite = navigateToFavorite
+                    navigateToFavorite = navigateToFavorite,
+                    isDarkMode = isDarkMode,
+                    darkThemeSwitch = darkThemeSwitch
                 )
             }
 
@@ -100,16 +106,15 @@ fun HomeContent(
     onQueryChange: (String) -> Unit,
     moreItems: Boolean = true,
     navigateToDetail: (String) -> Unit,
-    navigateToFavorite: () -> Unit
+    navigateToFavorite: () -> Unit,
+    isDarkMode: Boolean,
+    darkThemeSwitch: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(
-            start = 20.dp,
-            end = 20.dp,
-            bottom = 16.dp
+        state = listState, contentPadding = PaddingValues(
+            start = 20.dp, end = 20.dp, bottom = 16.dp
         )
     ) {
         item {
@@ -121,6 +126,8 @@ fun HomeContent(
                 active = false,
                 onActiveChange = {},
                 navigateToFavorite = navigateToFavorite,
+                isDarkMode = isDarkMode,
+                darkModeSwitch = darkThemeSwitch,
             )
         }
         items(users, key = { it.id }) { user ->
@@ -157,6 +164,8 @@ fun HomeContent(
 fun HomeScreenPreview() {
     HomeScreen(
         navigateToDetail = {},
-        navigateToFavorite = {}
+        navigateToFavorite = {},
+        isDarkMode = false,
+        darkThemeSwitch = {},
     )
 }

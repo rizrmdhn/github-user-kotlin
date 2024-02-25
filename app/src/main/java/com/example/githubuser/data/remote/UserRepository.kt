@@ -69,31 +69,35 @@ class UserRepository(
     fun searchUser(
         query: String
     ): Flow<List<UserListResponseItem>> {
-        val client = apiService.searchUsers(
-            query = query, perPage = perPage
-        )
-        client.enqueue(object : Callback<SearchUserResponse> {
-            override fun onResponse(
-                call: Call<SearchUserResponse>, response: Response<SearchUserResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        data.clear()
-                        data.addAll(responseBody.items)
+        if (query.isNotEmpty()) {
+            val client = apiService.searchUsers(
+                query = query, perPage = perPage
+            )
+            client.enqueue(object : Callback<SearchUserResponse> {
+                override fun onResponse(
+                    call: Call<SearchUserResponse>,
+                    response: Response<SearchUserResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        if (responseBody != null) {
+                            data.clear()
+                            data.addAll(responseBody.items)
+                        }
+                    } else {
+                        throw Exception(response.message())
                     }
-                } else {
-                    throw Exception(response.message())
                 }
-            }
 
-            override fun onFailure(call: Call<SearchUserResponse>, t: Throwable) {
-                throw Exception(t.message.toString())
-            }
-        })
+                override fun onFailure(call: Call<SearchUserResponse>, t: Throwable) {
+                    throw Exception(t.message.toString())
+                }
+            })
 
-
-        return flowOf(data)
+            return flowOf(data)
+        } else {
+            return getUsers()
+        }
     }
 
     fun getUserDetails(
