@@ -1,23 +1,26 @@
 package com.example.githubuser.data.remote
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import com.example.githubuser.data.local.entity.FavoriteUserEntity
+import com.example.githubuser.data.local.room.FavoriteUserDao
 import com.example.githubuser.data.remote.response.DetailUserResponse
 import com.example.githubuser.data.remote.response.SearchUserResponse
 import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class UserRepository(
-    private val apiService: ApiService
+    private val apiService: ApiService, private val favoriteUserDao: FavoriteUserDao
 ) {
     private val data = mutableStateListOf<UserListResponseItem>()
     private var detailUser by mutableStateOf<DetailUserResponse?>(null)
@@ -29,8 +32,7 @@ class UserRepository(
 
     fun getUsers(): Flow<List<UserListResponseItem>> {
         val client = apiService.getUsers(
-            since = since,
-            perPage = perPage
+            since = since, perPage = perPage
         )
         client.enqueue(object : Callback<List<UserListResponseItem>> {
             override fun onResponse(
@@ -68,13 +70,11 @@ class UserRepository(
         query: String
     ): Flow<List<UserListResponseItem>> {
         val client = apiService.searchUsers(
-            query = query,
-            perPage = perPage
+            query = query, perPage = perPage
         )
         client.enqueue(object : Callback<SearchUserResponse> {
             override fun onResponse(
-                call: Call<SearchUserResponse>,
-                response: Response<SearchUserResponse>
+                call: Call<SearchUserResponse>, response: Response<SearchUserResponse>
             ) {
                 if (response.isSuccessful) {
                     val responseBody = response.body()
@@ -102,8 +102,7 @@ class UserRepository(
         val client = apiService.getUserDetail(username)
         client.enqueue(object : Callback<DetailUserResponse> {
             override fun onResponse(
-                call: Call<DetailUserResponse>,
-                response: Response<DetailUserResponse>
+                call: Call<DetailUserResponse>, response: Response<DetailUserResponse>
             ) {
                 if (response.isSuccessful) {
                     val responseBody = response.body()
@@ -180,15 +179,34 @@ class UserRepository(
         return flowOf(detailUserFollowing)
     }
 
+    fun getFavoriteUsers(): Flow<List<FavoriteUserEntity>> {
+        return favoriteUserDao.getFavoriteUsers()
+    }
+
+    fun searchFavoriteUser(query: String): Flow<List<FavoriteUserEntity>> {
+        return favoriteUserDao.searchFavoriteUser(query)
+    }
+
+    suspend fun insertFavoriteUser(favoriteUser: FavoriteUserEntity) {
+        favoriteUserDao.insertFavoriteUser(favoriteUser)
+    }
+
+    suspend fun deleteFavoriteUser(username: String) {
+        favoriteUserDao.deleteFavoriteUser(username)
+    }
+
+    fun isFavoriteUser(username: String): Flow<Boolean> {
+        return favoriteUserDao.isFavoriteUser(username)
+    }
+
 
     companion object {
         @Volatile
         private var instance: UserRepository? = null
         fun getInstance(
-            apiService: ApiService
-        ): UserRepository =
-            instance ?: synchronized(this) {
-                instance ?: UserRepository(apiService)
-            }.also { instance = it }
+            apiService: ApiService, favoriteUserDao: FavoriteUserDao
+        ): UserRepository = instance ?: synchronized(this) {
+            instance ?: UserRepository(apiService, favoriteUserDao)
+        }.also { instance = it }
     }
 }

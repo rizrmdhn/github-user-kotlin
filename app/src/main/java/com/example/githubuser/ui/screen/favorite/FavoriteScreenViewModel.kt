@@ -1,65 +1,51 @@
-package com.example.githubuser.ui.screen.home
-
+package com.example.githubuser.ui.screen.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.githubuser.data.local.entity.FavoriteUserEntity
 import com.example.githubuser.data.remote.UserRepository
-import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.ui.common.UiState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class FavoriteScreenViewModel(
     private val repository: UserRepository
 ) : ViewModel() {
-    private val _uiState: MutableStateFlow<UiState<List<UserListResponseItem>>> =
+    private val _uiState: MutableStateFlow<UiState<List<FavoriteUserEntity>>> =
         MutableStateFlow(UiState.Loading)
-    val uiState: StateFlow<UiState<List<UserListResponseItem>>>
+    val uiState: MutableStateFlow<UiState<List<FavoriteUserEntity>>>
         get() = _uiState
 
     private val _query = MutableStateFlow("")
-    val query: StateFlow<String> get() = _query
+    val query: MutableStateFlow<String> get() = _query
 
 
-    fun getUsers() {
+    fun getFavoriteUsers() {
         viewModelScope.launch {
-            repository.getUsers().catch {
+            repository.getFavoriteUsers().catch {
                 _uiState.value = UiState.Error(it.message.toString())
-            }.collect {
-                _uiState.value = UiState.Success(it)
-            }
-        }
-    }
-
-    fun getMoreUsers() {
-        viewModelScope.launch {
-            repository.getMoreUsers().catch {
-                _uiState.value = UiState.Error(it.message.toString())
-            }.collect {
-                _uiState.value = UiState.Success(it)
+            }.collect { users ->
+                _uiState.value = UiState.Success(users)
             }
         }
     }
 
     @OptIn(FlowPreview::class)
-    fun searchUsers(newQuery: String) {
+    fun searchFavoriteUsers(newQuery: String) {
         viewModelScope.launch {
             _query.value = newQuery
             _query.debounce(300).collectLatest {
-                repository.searchUser(
+                repository.searchFavoriteUser(
                     newQuery
-                ).catch {
-                    _uiState.value = UiState.Error(it.message.toString())
-                }.collect {
+                ).collect {
                     _uiState.value = UiState.Success(it)
                 }
             }
         }
     }
-
+    
 }

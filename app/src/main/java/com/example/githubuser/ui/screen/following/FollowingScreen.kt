@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.githubuser.data.remote.response.UserListResponseItem
@@ -25,10 +26,15 @@ import com.example.githubuser.ui.components.UserCardLoading
 fun FollowingScreen(
     username: String,
     viewModel: FollowingScreenViewModel = viewModel(
-        factory = ViewModelFactory(Injection.provideUserRepository())
+        factory = ViewModelFactory(
+            Injection.provideUserRepository(
+                context = LocalContext.current
+            )
+        )
     ),
     navigateToDetail: (String) -> Unit
 ) {
+
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
         when (uiState) {
             is UiState.Loading -> {
@@ -51,7 +57,7 @@ fun FollowingScreen(
                     followerList = uiState.data,
                     navigateToDetail = {
                         navigateToDetail(it)
-                    }
+                    },
                 )
             }
 
@@ -72,7 +78,7 @@ fun FollowingScreen(
 @Composable
 fun FollowingScreenContent(
     followerList: List<UserListResponseItem>,
-    navigateToDetail: (String) -> Unit
+    navigateToDetail: (String) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -91,11 +97,12 @@ fun FollowingScreenContent(
         } else {
             items(followerList, key = { it.id }) { user ->
                 UserCard(
+                    id = user.id,
                     name = user.login,
                     imageUrl = user.avatarUrl,
                     onClick = {
                         navigateToDetail(user.login)
-                    }
+                    },
                 )
             }
         }

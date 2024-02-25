@@ -1,11 +1,10 @@
 package com.example.githubuser.ui.screen.detail
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.githubuser.data.local.entity.FavoriteUserEntity
 import com.example.githubuser.data.remote.UserRepository
 import com.example.githubuser.data.remote.response.DetailUserResponse
-import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,15 +19,8 @@ class DetailScreenViewModel(
     val uiState: StateFlow<UiState<DetailUserResponse>>
         get() = _uiState
 
-    private val _uiStateFollower: MutableStateFlow<UiState<List<UserListResponseItem>>> =
-        MutableStateFlow(UiState.Loading)
-    val uiStateFollower: StateFlow<UiState<List<UserListResponseItem>>>
-        get() = _uiStateFollower
-
-    private val _uiStateFollowing: MutableStateFlow<UiState<List<UserListResponseItem>>> =
-        MutableStateFlow(UiState.Loading)
-    val uiStateFollowing: StateFlow<UiState<List<UserListResponseItem>>>
-        get() = _uiStateFollowing
+    private val _isFavoriteUser = MutableStateFlow(false)
+    val isFavoriteUser: MutableStateFlow<Boolean> get() = _isFavoriteUser
 
 
     fun getUserDetails(username: String) {
@@ -47,28 +39,21 @@ class DetailScreenViewModel(
         }
     }
 
-    fun getFollowers(username: String) {
+    fun insertFavoriteUser(favoriteUser: FavoriteUserEntity) {
         viewModelScope.launch {
-            repository.getUserDetailsFollower(username)
-                .catch {
-                    _uiStateFollower.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _uiStateFollower.value = UiState.Success(it)
-                }
+            if (_isFavoriteUser.value) {
+                repository.deleteFavoriteUser(favoriteUser.login)
+            } else {
+                repository.insertFavoriteUser(favoriteUser)
+            }
         }
     }
 
-    fun getFollowing(username: String) {
+    fun isFavoriteUser(username: String) {
         viewModelScope.launch {
-            repository.getUserDetailsFollowing(username)
-                .catch {
-                    _uiStateFollowing.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _uiStateFollowing.value = UiState.Success(it)
-                }
+            repository.isFavoriteUser(username).collect {
+                _isFavoriteUser.value = it
+            }
         }
     }
-
 }

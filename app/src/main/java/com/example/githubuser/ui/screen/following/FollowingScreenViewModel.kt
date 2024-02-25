@@ -22,13 +22,11 @@ class FollowingScreenViewModel(
 
     fun getFollowing(username: String) {
         viewModelScope.launch {
-            repository.getUserDetailsFollowing(username)
-                .catch {
-                    _uiState.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _uiState.value = UiState.Success(it)
-                }
+            repository.getUserDetailsFollowing(username).catch {
+                _uiState.value = UiState.Error(it.message.toString())
+            }.collect {
+                _uiState.value = UiState.Success(it)
+            }
         }
     }
 

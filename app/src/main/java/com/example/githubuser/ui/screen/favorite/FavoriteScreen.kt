@@ -1,4 +1,4 @@
-package com.example.githubuser.ui.screen.home
+package com.example.githubuser.ui.screen.favorite
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,22 +16,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.githubuser.data.local.entity.FavoriteUserEntity
 import com.example.githubuser.di.Injection
 import com.example.githubuser.ui.ViewModelFactory
-import com.example.githubuser.data.remote.response.UserListResponseItem
 import com.example.githubuser.ui.common.UiState
 import com.example.githubuser.ui.components.Search
 import com.example.githubuser.ui.components.UserCard
-import com.example.githubuser.ui.components.UserCardLoading
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(
+fun FavoriteScreen(
+    viewModel: FavoriteScreenViewModel = viewModel(
         factory = ViewModelFactory(
             Injection.provideUserRepository(
                 context = LocalContext.current
             )
         )
+
     ),
     navigateToDetail: (String) -> Unit,
     navigateToFavorite: () -> Unit
@@ -41,81 +41,63 @@ fun HomeScreen(
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let { uiState ->
         when (uiState) {
             is UiState.Loading -> {
-                viewModel.getUsers()
+                viewModel.getFavoriteUsers()
                 LazyColumn(
                     contentPadding = PaddingValues(
-                        start = 20.dp,
-                        end = 20.dp,
-                        bottom = 16.dp
-                    ),
-                    modifier = Modifier.fillMaxSize()
+                        start = 20.dp, end = 20.dp, bottom = 16.dp
+                    ), modifier = Modifier.fillMaxSize()
                 ) {
                     item {
                         Search(
                             query = "",
-                            searchPlaceHolder = "Cari user github...",
+                            searchPlaceHolder = "Cari favorite user...",
                             onQueryChange = {},
                             onSearch = {},
                             active = false,
                             onActiveChange = {},
-                            navigateToFavorite = navigateToFavorite,
+                            navigateToFavorite = {},
                         )
-                    }
-                    items(10) {
-                        UserCardLoading()
                     }
                 }
             }
 
             is UiState.Success -> {
-                HomeContent(
+                FavoriteContent(
                     users = uiState.data,
                     query = query,
-                    onQueryChange = viewModel::searchUsers,
-                    loadMore = {
-                        viewModel.getMoreUsers()
-                    },
+                    onQueryChange = viewModel::searchFavoriteUsers,
                     navigateToDetail = navigateToDetail,
-                    navigateToFavorite = navigateToFavorite
+                    navigateToFavorite = navigateToFavorite,
                 )
             }
 
-            is UiState.Error -> {
-                Text(
-                    text = "Error: $uiState",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
+            is UiState.Error -> {}
         }
+
     }
 }
 
 @Composable
-fun HomeContent(
-    users: List<UserListResponseItem>,
-    loadMore: () -> Unit = {},
+fun FavoriteContent(
+    users: List<FavoriteUserEntity>,
     query: String,
     onQueryChange: (String) -> Unit,
-    moreItems: Boolean = true,
     navigateToDetail: (String) -> Unit,
-    navigateToFavorite: () -> Unit
+    navigateToFavorite: () -> Unit,
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(
-            start = 20.dp,
-            end = 20.dp,
-            bottom = 16.dp
-        )
+            start = 20.dp, end = 20.dp, bottom = 16.dp
+        ),
+        modifier = Modifier.fillMaxSize()
     ) {
         item {
             Search(
                 query = query,
-                searchPlaceHolder = "Cari user github...",
+                searchPlaceHolder = "Cari favorite user...",
                 onQueryChange = onQueryChange,
                 onSearch = {},
                 active = false,
@@ -123,30 +105,27 @@ fun HomeContent(
                 navigateToFavorite = navigateToFavorite,
             )
         }
-        items(users, key = { it.id }) { user ->
-            UserCard(
-                id = user.id,
-                name = user.login,
-                imageUrl = user.avatarUrl,
-                onClick = {
-                    navigateToDetail(user.login)
-                },
-            )
-        }
-        items(users.size) { index ->
-            if (index == users.size - 1) {
-                if (moreItems) {
-                    loadMore()
-                    UserCardLoading()
-                } else {
-                    Text(
-                        text = "No more items",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillParentMaxSize()
-                    )
-                }
+        if (users.isEmpty()) {
+            item {
+                Text(
+                    text = "No favorite user please add some!",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            items(users, key = { it.id }) { user ->
+                UserCard(
+                    id = user.id,
+                    name = user.login,
+                    imageUrl = user.avatarUrl,
+                    onClick = {
+                        navigateToDetail(user.login)
+                    },
+                )
             }
         }
     }
@@ -154,8 +133,11 @@ fun HomeContent(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen(
+fun FavoriteScreenPreview() {
+    FavoriteContent(
+        users = emptyList(),
+        query = "",
+        onQueryChange = {},
         navigateToDetail = {},
         navigateToFavorite = {}
     )

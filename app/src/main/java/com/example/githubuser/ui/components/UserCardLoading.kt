@@ -60,9 +60,6 @@ fun UserCardLoading(
                         .width(100.dp)
                         .height(16.dp)
                 )
-                Spacer(
-                    modifier = Modifier.size(8.dp)
-                )
             }
         }
     }

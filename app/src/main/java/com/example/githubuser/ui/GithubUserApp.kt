@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.githubuser.ui.navigation.Screen
 import com.example.githubuser.ui.screen.detail.DetailScreen
+import com.example.githubuser.ui.screen.favorite.FavoriteScreen
 import com.example.githubuser.ui.screen.home.HomeScreen
 import com.example.githubuser.ui.theme.GithubUserTheme
 
@@ -34,6 +35,27 @@ fun GithubUserApp(
                     navigateToDetail = { username ->
                         navController.navigate(
                             Screen.DetailUser.createRoute(username)
+                        )
+                    },
+                    navigateToFavorite = {
+                        navController.navigate(
+                            Screen.Favorite.route
+                        )
+                    }
+                )
+            }
+            composable(
+                route = Screen.Favorite.route,
+            ) {
+                FavoriteScreen(
+                    navigateToDetail = { username ->
+                        navController.navigate(
+                            Screen.DetailUser.createRoute(username)
+                        )
+                    },
+                    navigateToFavorite = {
+                        navController.navigate(
+                            Screen.Favorite.route
                         )
                     }
                 )

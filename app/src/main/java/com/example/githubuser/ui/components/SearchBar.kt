@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
@@ -20,10 +22,12 @@ import com.example.githubuser.ui.theme.GithubUserTheme
 @Composable
 fun Search(
     query: String,
+    searchPlaceHolder: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     active: Boolean,
     onActiveChange: (Boolean) -> Unit,
+    navigateToFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     SearchBar(
@@ -33,18 +37,34 @@ fun Search(
         active = active,
         onActiveChange = onActiveChange,
         leadingIcon = {
-                      Icon(
-                          imageVector = Icons.Default.Search,
-                          contentDescription = null,
-                          tint = MaterialTheme.colorScheme.onSurface
-                      )
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         },
         placeholder = {
             Text(
-                text = "Cari user github...",
+                text = searchPlaceHolder,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = {
+                    navigateToFavorite()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        content = {
+
         },
         modifier = modifier
             .padding(16.dp)
@@ -52,9 +72,7 @@ fun Search(
             .heightIn(
                 min = 56.dp
             )
-    ) {
-
-    }
+    )
 }
 
 @Preview(showBackground = true)
@@ -63,10 +81,12 @@ fun SearchPreview() {
     GithubUserTheme {
         Search(
             query = "",
+            searchPlaceHolder = "Cari favorite user...",
             onQueryChange = {},
             onSearch = {},
             active = false,
-            onActiveChange = {}
+            onActiveChange = {},
+            navigateToFavorite = {}
         )
     }
 }

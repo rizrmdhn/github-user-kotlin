@@ -6,6 +6,8 @@ val debug: Boolean = gradleLocalProperties(rootDir).getProperty("DEBUG")?.toBool
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -100,4 +102,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") //viewModelScope
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0") //liveData
     implementation("androidx.room:room-ktx:2.6.1")
+
+    //room
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 }
